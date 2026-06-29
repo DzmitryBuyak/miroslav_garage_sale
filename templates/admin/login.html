@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body style="background:#f5f5f5;display:flex;align-items:center;justify-content:center;min-height:100vh;">
+<div class="admin-form" style="width:100%;max-width:360px;">
+    <h2 style="margin-bottom:1.5rem;font-size:1.2rem;">🔒 Admin Login</h2>
+    {% if error %}<p style="color:#e8614a;margin-bottom:1rem;font-size:.875rem;">{{ error }}</p>{% endif %}
+    <form method="post" action="/admin/login">
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" autofocus required>
+        </div>
+        <button class="btn btn-primary" type="submit">Login</button>
+    </form>
+</div>
+</body>
+</html>

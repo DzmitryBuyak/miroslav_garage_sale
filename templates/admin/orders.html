@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Orders</h1>
+</div>
+
+{% if orders %}
+{% for order in orders %}
+<div class="order-card">
+    <div class="order-header">
+        <div>
+            <strong>#{{ order.id }}</strong>
+            <span style="color:#888;font-size:.85rem;margin-left:.75rem;">{{ order.created_at }}</span>
+        </div>
+        <span class="status-{{ order.status }}">{{ order.status }}</span>
+    </div>
+
+    <div class="order-items">
+        {% for item in order.items %}
+        <span class="order-item-chip">
+            {% if item %}{{ item.title }} — {{ item.price | int }} RSD{% else %}(deleted){% endif %}
+        </span>
+        {% endfor %}
+    </div>
+
+    <div style="font-size:.875rem;color:#555;margin-bottom:.75rem;">
+        <strong>{{ order.buyer_name }}</strong> · {{ order.buyer_contact }}
+        {% if order.note %}<br><span style="color:#888;">Note: {{ order.note }}</span>{% endif %}
+    </div>
+
+    {% if order.status == 'pending' %}
+    <div class="order-actions">
+        <form method="post" action="/admin/orders/{{ order.id }}/approve">
+            <button class="btn btn-primary btn-sm" type="submit">✓ Approve</button>
+        </form>
+        <form method="post" action="/admin/orders/{{ order.id }}/reject">
+            <button class="btn btn-danger btn-sm" type="submit">✕ Reject</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<div class="empty">
+    <div class="empty-icon">📋</div>
+    <p>No orders yet.</p>
+</div>
+{% endif %}
+{% endblock %}

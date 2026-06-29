@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+{% block title %}{% if item %}Edit item{% else %}Add item{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if item %}Edit: {{ item.title }}{% else %}Add item{% endif %}</h1>
+    <a href="/admin/items" class="btn btn-outline btn-sm">← Back</a>
+</div>
+
+<form class="admin-form"
+      method="post"
+      action="{% if item %}/admin/items/{{ item.id }}/edit{% else %}/admin/items/add{% endif %}"
+      enctype="multipart/form-data">
+
+    <div class="form-group">
+        <label>Title *</label>
+        <input type="text" name="title" value="{{ item.title if item else '' }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        <textarea name="description">{{ item.description if item else '' }}</textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+            <label>Category *</label>
+            <select name="category" required>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if item and item.category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Size (optional)</label>
+            <input type="text" name="size" value="{{ item.size if item and item.size else '' }}" placeholder="e.g. 62, 80–86, S">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Price (RSD) *</label>
+        <input type="number" name="price" value="{{ item.price if item else '' }}" min="0" step="1" required>
+    </div>
+
+    {% if item and item.photos %}
+    <div class="form-group">
+        <label>Current photos (uncheck to delete)</label>
+        <div class="photo-preview">
+            {% for photo in item.photos %}
+            <div class="photo-preview-item">
+                <img src="/static/photos/{{ photo }}" alt="">
+                <label title="Keep">
+                    <input type="checkbox" name="keep_photos" value="{{ photo }}" checked style="display:none;">
+                    ✓
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        <p style="font-size:.8rem;color:#999;margin-top:.4rem;">Click the checkmark to remove a photo.</p>
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+        <label>{% if item and item.photos %}Add more photos{% else %}Photos{% endif %}</label>
+        <input type="file" name="{% if item %}new_photos{% else %}photos{% endif %}"
+               multiple accept="image/*">
+    </div>
+
+    <button class="btn btn-primary" type="submit">
+        {% if item %}Save changes{% else %}Add item{% endif %}
+    </button>
+</form>
+
+<script>
+// Toggle checkmark style on photo keep/remove
+document.querySelectorAll('.photo-preview-item label').forEach(label => {
+    const cb = label.querySelector('input[type=checkbox]');
+    const img = label.closest('.photo-preview-item').querySelector('img');
+    function update() {
+        label.style.background = cb.checked ? 'rgba(0,0,0,.5)' : '#e8614a';
+        img.style.opacity = cb.checked ? '1' : '.4';
+    }
+    update();
+    label.addEventListener('click', () => { cb.checked = !cb.checked; update(); });
+});
+</script>
+{% endblock %}

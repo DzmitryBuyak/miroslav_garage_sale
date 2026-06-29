@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Order sent — Baby Shop{% endblock %}
+
+{% block content %}
+<div class="done-box">
+    <div class="done-icon">✅</div>
+    <h1>Order received!</h1>
+    <p>
+        The items are reserved for 24 hours. I'll reach out to confirm the order.
+        If you don't hear back, feel free to message me directly.
+    </p>
+    <a href="{{ telegram_link }}" target="_blank" class="btn btn-telegram">
+        Message me on Telegram
+    </a>
+    <br><br>
+    <a href="/" style="color:#888;font-size:.875rem;">← Back to shop</a>
+</div>
+{% endblock %}

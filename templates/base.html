@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Baby Shop{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">🧸 Baby Shop</a>
+        <nav>
+            <a href="/?category=Apparel">Apparel</a>
+            <a href="/?category=Toys">Toys</a>
+            <a href="/?category=Other">Other</a>
+            <a href="/checkout" class="cart-link">
+                🛒 Cart{% if cart_count %}<span class="badge">{{ cart_count }}</span>{% endif %}
+            </a>
+        </nav>
+    </div>
+</header>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>
+    <p>Questions? Reach me on <a href="{{ telegram_link }}" target="_blank">Telegram</a></p>
+</footer>
+</body>
+</html>

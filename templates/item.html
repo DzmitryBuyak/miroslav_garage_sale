@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} — Baby Shop{% endblock %}
+
+{% block content %}
+<div class="item-layout">
+    <div>
+        {% if item.photos %}
+        <img class="photo-main" id="main-photo" src="/static/photos/{{ item.photos[0] }}" alt="{{ item.title }}">
+        {% if item.photos | length > 1 %}
+        <div class="photo-thumbs">
+            {% for photo in item.photos %}
+            <img class="photo-thumb {% if loop.first %}active{% endif %}"
+                 src="/static/photos/{{ photo }}"
+                 onclick="document.getElementById('main-photo').src=this.src;
+                          document.querySelectorAll('.photo-thumb').forEach(t=>t.classList.remove('active'));
+                          this.classList.add('active');">
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="photo-main" style="display:flex;align-items:center;justify-content:center;font-size:5rem;">🧸</div>
+        {% endif %}
+    </div>
+
+    <div class="item-info">
+        <div>
+            <span class="tag">{{ item.category }}</span>
+            {% if item.size %}<span class="tag">{{ item.size }}</span>{% endif %}
+        </div>
+        <h1 class="item-title">{{ item.title }}</h1>
+        <div class="item-price">{{ item.price | int }} RSD</div>
+        {% if item.description %}
+        <p class="item-desc">{{ item.description }}</p>
+        {% endif %}
+
+        {% if in_cart %}
+        <form method="post" action="/cart/remove/{{ item.id }}">
+            <button class="btn btn-danger" type="submit">Remove from cart</button>
+        </form>
+        <a href="/checkout" class="btn btn-outline" style="margin-top:.5rem;display:flex;">Go to cart →</a>
+        {% else %}
+        <form method="post" action="/cart/add/{{ item.id }}">
+            <button class="btn btn-primary" type="submit">Add to cart</button>
+        </form>
+        {% endif %}
+
+        <a href="/" style="color:#888;font-size:.875rem;">← Back to all items</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+.env
+shop.sqlite
+static/photos/
+__pycache__/
+*.pyc
+venv/
