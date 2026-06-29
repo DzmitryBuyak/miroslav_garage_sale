@@ -41,8 +41,7 @@ def _require_admin(request: Request):
         return RedirectResponse("/admin/login", status_code=302)
 
 def _ctx(request: Request, **kwargs):
-    return {"request": request, "cart_count": len(cart(request)),
-            "telegram_link": TELEGRAM_LINK, **kwargs}
+    return {"cart_count": len(cart(request)), "telegram_link": TELEGRAM_LINK, **kwargs}
 
 
 # ── public ─────────────────────────────────────────────────────────────────────
@@ -53,7 +52,7 @@ async def index(request: Request, category: str = None):
     if category not in CATEGORIES:
         category = None
     items = db.get_items(category)
-    return templates.TemplateResponse("index.html", _ctx(
+    return templates.TemplateResponse(request, "index.html", _ctx(
         request, items=items, category=category, categories=CATEGORIES
     ))
 
@@ -63,7 +62,7 @@ async def item_detail(request: Request, item_id: int):
     item = db.get_item(item_id)
     if not item or item["status"] != "available":
         raise HTTPException(404)
-    return templates.TemplateResponse("item.html", _ctx(
+    return templates.TemplateResponse(request, "item.html", _ctx(
         request, item=item, in_cart=(item_id in cart(request))
     ))
 
@@ -90,7 +89,7 @@ async def cart_remove(request: Request, item_id: int):
 async def checkout_get(request: Request):
     items = [i for i in (db.get_item(i) for i in cart(request)) if i]
     total = sum(i["price"] for i in items)
-    return templates.TemplateResponse("checkout.html", _ctx(
+    return templates.TemplateResponse(request, "checkout.html", _ctx(
         request, items=items, total=total
     ))
 
@@ -112,14 +111,14 @@ async def checkout_post(
 
 @app.get("/done", response_class=HTMLResponse)
 async def done(request: Request):
-    return templates.TemplateResponse("done.html", _ctx(request))
+    return templates.TemplateResponse(request, "done.html", _ctx(request))
 
 
 # ── admin ──────────────────────────────────────────────────────────────────────
 
 @app.get("/admin/login", response_class=HTMLResponse)
 async def admin_login_get(request: Request):
-    return templates.TemplateResponse("admin/login.html", {"request": request, "error": None})
+    return templates.TemplateResponse(request, "admin/login.html", {"error": None})
 
 
 @app.post("/admin/login")
@@ -127,7 +126,7 @@ async def admin_login_post(request: Request, password: str = Form(...)):
     if password == ADMIN_PASSWORD:
         request.session["admin"] = True
         return RedirectResponse("/admin/items", status_code=303)
-    return templates.TemplateResponse("admin/login.html", {"request": request, "error": "Wrong password"})
+    return templates.TemplateResponse(request, "admin/login.html", {"error": "Wrong password"})
 
 
 @app.get("/admin/logout")
@@ -141,14 +140,14 @@ async def admin_items(request: Request):
     if r := _require_admin(request): return r
     db.release_expired()
     items = db.get_all_items_admin()
-    return templates.TemplateResponse("admin/items.html", {"request": request, "items": items})
+    return templates.TemplateResponse(request, "admin/items.html", {"items": items})
 
 
 @app.get("/admin/items/add", response_class=HTMLResponse)
 async def admin_item_add_get(request: Request):
     if r := _require_admin(request): return r
-    return templates.TemplateResponse("admin/item_form.html", {
-        "request": request, "item": None, "categories": CATEGORIES
+    return templates.TemplateResponse(request, "admin/item_form.html", {
+        "item": None, "categories": CATEGORIES
     })
 
 
@@ -177,8 +176,8 @@ async def admin_item_edit_get(request: Request, item_id: int):
     item = db.get_item(item_id)
     if not item:
         raise HTTPException(404)
-    return templates.TemplateResponse("admin/item_form.html", {
-        "request": request, "item": item, "categories": CATEGORIES
+    return templates.TemplateResponse(request, "admin/item_form.html", {
+        "item": item, "categories": CATEGORIES
     })
 
 
@@ -229,7 +228,7 @@ async def admin_item_delete(request: Request, item_id: int):
 async def admin_orders(request: Request):
     if r := _require_admin(request): return r
     orders = db.get_orders()
-    return templates.TemplateResponse("admin/orders.html", {"request": request, "orders": orders})
+    return templates.TemplateResponse(request, "admin/orders.html", {"orders": orders})
 
 
 @app.post("/admin/orders/{order_id}/approve")
