@@ -18,7 +18,7 @@
     </div>
 
     <div class="order-items">
-        {% for item in order.items %}
+        {% for item in order.order_items %}
         <span class="order-item-chip">
             {% if item %}{{ item.title }} — {{ item.price | int }} RSD{% else %}(deleted){% endif %}
         </span>
