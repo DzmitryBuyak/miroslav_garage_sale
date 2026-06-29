@@ -138,7 +138,7 @@ def get_orders():
     for row in rows:
         o = dict(row)
         item_ids = json.loads(o["items_json"])
-        o["items"] = [get_item(i) or {"id": i, "title": "(deleted)", "price": 0, "photos": []} for i in item_ids]
+        o["order_items"] = [get_item(i) or {"id": i, "title": "(deleted)", "price": 0, "photos": []} for i in item_ids]
         orders.append(o)
     return orders
 
